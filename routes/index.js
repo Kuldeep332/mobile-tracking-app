@@ -4,6 +4,7 @@ const router = express.Router();
 var userModel = require('./users')
 var passport = require('passport')
 const upload = require('./multer');
+// const location=require('./latituse')
 
 var localStrategy = require('passport-local')
 passport.use(new localStrategy(userModel.authenticate()))
@@ -75,5 +76,14 @@ router.post('/register', upload.single('image'), function (req, res) {
   
   /* **************** user authentication routes ********************* */
   
-  
+  router.get("/lon",isloggedIn,function(req,res){
+    res.render("lon")
+
+  })
+  router.get('/lan',isloggedIn, async function(req,res){
+   
+    res.render("lon")
+  })
+
+
 module.exports = router;

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Tracking App</title>
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+  #div{
+    width: 100vw;
+    height: fit-content;
+    /* background-color: rgb(190, 169, 169); */
+   
+  }
+  form{
+    /* background-color: blue; */
+    text-align: center;
+    width: 40vw;
+    height: 100%;
+background-color: transparent;
+background-image: url("https://i.pinimg.com/474x/f1/21/9b/f1219bcdfeca8e2b19f7ed7fa121abdc.jpg");
+    overflow: hidden;
+border-radius: 20px;
+
+    border: 1px solid black;
+
+    display: flex;
+    flex-direction: column;
+  }
+  input{
+    padding: 8px 24px;
+    border-radius: 20px;
+  }
+button{
+    margin-top: 20px;
+    padding: 10px 20px;
+    width: 20vw;
+    margin-left: 10vw;
+    border-radius: 23px;
+}
+    </style>
+</head>
+<body>
+    <h1>Mobile Tracking App</h1>
+    <div id="map"></div>
+    <div id="div">
+        <form id="locationForm">
+            <h1> Enter your Latitude & LongTude</h1>
+            <label for="latitude">Latitude:</label>
+            <input type="text" id="latitude" name="latitude"><br><br>
+            <label for="longitude">Longitude:</label>
+            <input type="text" id="longitude" name="longitude"><br><br>
+            <button type="button" onclick="trackLocation()">Track Location</button>
+            <button type="button" onclick="findCurrentLocation()">Find Current Location</button>
+            <h1 style="font-size: 1.4vw;"> IF YOU DO NOT HAVE LAT AND LONG SO <a style="text-decoration: none;" href="https://www.latlong.net/">enter</a></h1>
+        </form>
+    
+    </div>
+
+    <script>
+        let map;
+        let marker;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 0, lng: 0 },
+                zoom: 8,
+                draggable: true,
+                zoomControl: true,
+                streetViewControl: false
+            });
+
+            map.addListener('click', function(event) {
+                placeMarker(event.latLng);
+            });
+        }
+
+        function placeMarker(location) {
+            if (marker) {
+                marker.setMap(null);
+            }
+            marker = new google.maps.Marker({
+                position: location,
+                map: map
+            });
+        }
+
+        function trackLocation() {
+            const latitude = parseFloat(document.getElementById('latitude').value);
+            const longitude = parseFloat(document.getElementById('longitude').value);
+
+            if (isNaN(latitude) || isNaN(longitude)) {
+                alert('Please enter valid latitude and longitude.');
+                return;
+            }
+
+            const location = { lat: latitude, lng: longitude };
+            map.setCenter(location);
+            map.setZoom(14); // Adjust zoom level as needed
+            placeMarker(location);
+            drawCircle(location);
+        }
+
+        function findCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const currentLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    map.setCenter(currentLocation);
+                    map.setZoom(14); // Adjust zoom level as needed
+                    placeMarker(currentLocation);
+                    drawCircle(currentLocation);
+                }, function() {
+                    alert('Error: The Geolocation service failed.');
+                });
+            } else {
+                alert('Error: Your browser doesn\'t support geolocation.');
+            }
+        }
+
+        function drawCircle(location) {
+            const circle = new google.maps.Circle({
+                strokeColor: '#FF0000',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#FF0000',
+                fillOpacity: 0.35,
+                map: map,
+                center: location,
+                radius: 1000 // Adjust radius as needed (in meters)
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBc59RCA8ZQpkSZPurpCmj-lirA63KOEJo&callback=initMap" async defer></script>
+</body>
+</html>
